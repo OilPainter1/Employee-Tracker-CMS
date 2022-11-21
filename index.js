@@ -23,6 +23,12 @@ async function getRoles() {
     return
 }
 
+async function getEmployees() {
+    const employees = await connection.promise().query("SELECT * FROM employees")
+    console.table(employees[0])
+    return
+}
+
 //const currentDB = connection.promise().query("DROP DATABASE IF EXISTS employees_db")
 //const createDB = connection.promise().query("CREATE DATABASE employees_db")
 //const useDB = connection.promise().query("USE employees_db")
@@ -52,6 +58,10 @@ while(!done){
         }
         else if (answers.menu === "View all roles"){
             getRoles()
+            return
+        }
+        else if (answers.menu === "View all employees"){
+            getEmployees()
             return
         }
        
