@@ -33,12 +33,11 @@ async function getEmployees() {
 }
 
 //question ob
-const departmentQuestions = [{
-    type: "input",
-    name: "id",
-    message: "(Optional) Enter the department id:",
-    
-},
+async function AddDepartment() {
+   const departmentAnswer = await inquirer.prompt(departmentQuestions)
+   return departmentAnswer
+}
+const departmentQuestions = [
 {
     type: "input",
     name: "name",
@@ -53,10 +52,12 @@ const departmentQuestions = [{
  var done = false
 
  //const seed = connection.promise().query("insert into department (id,name) values (?,?)",[10,"consulting"])
+ //
  console.table(connection.promise().query("SELECT * FROM department"))
 
 
-while(!done){
+
+while (!done){ 
     await inquirer.prompt({
         type: "list",
         message: "Choose one of the following:",
@@ -86,11 +87,12 @@ while(!done){
             
             `)
             done = true
-            const departmentAnswers =  inquirer.prompt(departmentQuestions)
+            inquirer.prompt(departmentQuestions).then(answers=>{console.log(answers), done=false})
+            
             return
+            
         }
        
     })
 
 }
- 
