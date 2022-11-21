@@ -17,6 +17,12 @@ const connection = mysql2.createConnection({
     return
 }
 
+async function getRoles() {
+    const roles = await connection.promise().query("SELECT * FROM role_table")
+    console.table(roles[0])
+    return
+}
+
 //const currentDB = connection.promise().query("DROP DATABASE IF EXISTS employees_db")
 //const createDB = connection.promise().query("CREATE DATABASE employees_db")
 //const useDB = connection.promise().query("USE employees_db")
@@ -42,6 +48,10 @@ while(!done){
         }
         else if (answers.menu === "View all departments"){
             getDepartments()
+            return
+        }
+        else if (answers.menu === "View all roles"){
+            getRoles()
             return
         }
        
