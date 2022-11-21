@@ -3,31 +3,48 @@ dotenv.config()
 import inquirer from 'inquirer'
 import mysql2 from "mysql2"
 
-//const inquirer = require("inquirer")
 
+//initializes connection to mysql
 const connection = mysql2.createConnection({
     host: 'localhost',
     user: process.env.db_username,
     database: process.env.db_name
   })
 
-   async function getDepartments () { 
+//sql query to view departments
+async function getDepartments () { 
     const toReturn =  await connection.promise().query("SELECT * FROM department")
     console.table(toReturn[0])
     return
 }
 
+//sql query to view roles table
 async function getRoles() {
     const roles = await connection.promise().query("SELECT * FROM role_table")
     console.table(roles[0])
     return
 }
 
+//sql query to view employees table
 async function getEmployees() {
     const employees = await connection.promise().query("SELECT * FROM employees")
     console.table(employees[0])
     return
 }
+
+//question ob
+const departmentQuestions = [{
+    type: "input",
+    name: "id",
+    message: "(Optional) Enter the department id:",
+    
+},
+{
+    type: "input",
+    name: "name",
+    message: "(Optional) Enter the department name:"
+
+}]
 
 //const currentDB = connection.promise().query("DROP DATABASE IF EXISTS employees_db")
 //const createDB = connection.promise().query("CREATE DATABASE employees_db")
@@ -62,6 +79,14 @@ while(!done){
         }
         else if (answers.menu === "View all employees"){
             getEmployees()
+            return
+        }
+        else if (answers.menu === "Add a department"){
+            console.log(`
+            
+            `)
+            done = true
+            const departmentAnswers =  inquirer.prompt(departmentQuestions)
             return
         }
        
