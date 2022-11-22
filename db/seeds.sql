@@ -1,4 +1,5 @@
-INSERT INTO role_table(id,title)
+INSERT INTO department (id,name) VALUES (30,"Management")
+/*INSERT INTO role_table(id,title)
 VALUES(32,"consultant"),(1,"manager"),(50,"counselor");
 
 INSERT INTO employees(id,first_name,last_name,role_id,manager_id)

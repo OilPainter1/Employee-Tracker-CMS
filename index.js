@@ -13,16 +13,14 @@ const connection = mysql2.createConnection({
 
 //sql query to view departments
 async function getDepartments () { 
-    const toReturn =  await connection.promise().query("SELECT * FROM department")
-    console.table(toReturn[0])
-    return
+    const toReturn = await connection.promise().query("SELECT * FROM department")
+    return toReturn[0]
 }
 
 //sql query to view roles table
 async function getRoles() {
     const roles = await connection.promise().query("SELECT * FROM role_table")
-    console.table(roles[0])
-    return
+    return roles[0]
 }
 
 //sql query to view employees table
@@ -45,54 +43,89 @@ const departmentQuestions = [
 
 }]
 
-//const currentDB = connection.promise().query("DROP DATABASE IF EXISTS employees_db")
-//const createDB = connection.promise().query("CREATE DATABASE employees_db")
-//const useDB = connection.promise().query("USE employees_db")
-//const query1 = connection.promise().query(`insert into department values (?,?)`,[1,"HR"]).then(console.log("done"))
- var done = false
 
- //const seed = connection.promise().query("insert into department (id,name) values (?,?)",[10,"consulting"])
- //
- console.table(connection.promise().query("SELECT * FROM department"))
+ 
+
+var done = false
 
 
+while(!done){
 
-while (!done){ 
-    await inquirer.prompt({
+async function init2() {
+    const answers = await inquirer.prompt({
         type: "list",
         message: "Choose one of the following:",
         choices:["View all departments","View all roles", "View all employees","Add a department","Add a role","Add an employee","Update an employee role","done"],
-        name: "menu"
+        name: "menu",
+   
     })
-    .then(answers=>{
-        if (answers.menu === "done") {
-            console.log("Done")
-            done =true 
-            return
-        }
-        else if (answers.menu === "View all departments"){
-            getDepartments()
-            return
-        }
-        else if (answers.menu === "View all roles"){
-            getRoles()
-            return
-        }
-        else if (answers.menu === "View all employees"){
-            getEmployees()
-            return
-        }
-        else if (answers.menu === "Add a department"){
-            console.log(`
-            
-            `)
-            done = true
-            inquirer.prompt(departmentQuestions).then(answers=>{console.log(answers), done=false})
-            
-            return
-            
-        }
-       
-    })
-
+    return answers
 }
+
+//repeats menu prompt
+const returnedAnswers = await init2()
+
+if (returnedAnswers.menu === "done"){
+    console.log("done")
+    done=true
+    break
+}
+else if (returnedAnswers.menu === "View all departments"){
+    console.table(await getDepartments())
+    continue
+}
+else if (returnedAnswers.menu === "View all roles"){
+    console.table(await getRoles())
+    continue
+}
+}
+
+/*async function init(){
+inquirer.prompt({
+    type: "list",
+    message: "Choose one of the following:",
+    choices:["View all departments","View all roles", "View all employees","Add a department","Add a role","Add an employee","Update an employee role","done"],
+    name: "menu",
+   
+})
+.then(answers=>{
+    if (answers.menu === "done") {
+        console.log("Done")
+        done =true 
+        return
+    }
+    else if (answers.menu === "View all departments"){
+        getDepartments()
+        console.log(`
+        
+        `)
+        
+        return
+    }
+    else if (answers.menu === "View all roles"){
+        getRoles()
+        console.log(`
+        
+        `)
+        
+        return
+    }
+    else if (answers.menu === "View all employees"){
+        getEmployees()
+        console.log(`
+
+        `)
+        
+        return
+    }
+    else if (answers.menu === "Add a department"){
+        
+       
+        
+        return
+        
+    }})}
+    
+    
+    
+    */
