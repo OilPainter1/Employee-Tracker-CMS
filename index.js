@@ -26,8 +26,7 @@ async function getRoles() {
 //sql query to view employees table
 async function getEmployees() {
     const employees = await connection.promise().query("SELECT * FROM employees")
-    console.table(employees[0])
-    return
+    return employees[0]
 }
 
 //question ob
@@ -77,6 +76,15 @@ else if (returnedAnswers.menu === "View all departments"){
 else if (returnedAnswers.menu === "View all roles"){
     console.table(await getRoles())
     continue
+}
+else if (returnedAnswers.menu === "View all employees"){
+    console.table(await getEmployees())
+    continue
+}
+else if (returnedAnswers.menu === "Add a department"){
+    const newDepartment = await AddDepartment()
+    await connection.promise().query("insert into department (name) values (?)",[newDepartment.name])
+    console.log("Department added")
 }
 }
 
