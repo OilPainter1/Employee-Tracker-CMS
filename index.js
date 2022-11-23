@@ -60,13 +60,11 @@ async function listDepartments() {
 
 async function listRoles(){
     const roleArray = await getRoles()
-    console.log(roleArray)
     const newRoleArray = []
     roleArray.forEach((answers)=>{
         newRoleArray.push(answers.title)
         return
     })
-    console.log(newRoleArray)
     return newRoleArray
 }
 
@@ -75,6 +73,7 @@ async function listRoles(){
 
 
 //questions to be prompted for adding a new role
+async function callRoleQuestions(){
 const roleQuestions =[
     {
         type: "input",
@@ -94,8 +93,11 @@ const roleQuestions =[
     }
    
 ]
+return roleQuestions
+}
 
-var employeeQuestions = [
+async function callEmployeeQuestions(){
+const employeeQuestions = [
     {
         type: "input",
         message: "Enter employee's first name",
@@ -122,20 +124,22 @@ var employeeQuestions = [
 
 
 ]
+    return employeeQuestions
+}
 
 
 async function AddRole() {
-    const roleAnswers = await inquirer.prompt(roleQuestions)
+    const roleAnswers = await inquirer.prompt(await callRoleQuestions())
     const departmentId = await connection.promise().query("select id from department where name = ?",[roleAnswers.department])
     await connection.promise().query("insert into role_table (title,salary,department_id) values (?,?,?)",[roleAnswers.name,roleAnswers.salary,departmentId[0][0].id])
     return
 }
 
 async function AddEmployee() {
-    const employeeAnswers = await inquirer.prompt(employeeQuestions)
-    const roleId = await connection.promise().query("select id from roles_table where title = ?",[employeeAnswers.role])
-    await connection.promise().query("insert into role_table (first_name,last_name,role_id,manager_id) values (?,?,?,?)",
-        [employeeAnswers.firstName,employeeAnswers.lastName,employeeAnswers.role,employeeAnswers.manager])
+    const employeeAnswers = await inquirer.prompt(await callEmployeeQuestions())
+    const roleId = await connection.promise().query("select id from role_table where title = ?",[employeeAnswers.role])
+    await connection.promise().query("insert into employees (first_name,last_name,role_id,manager_id) values (?,?,?,?)",
+        [employeeAnswers.firstName,employeeAnswers.lastName,roleId[0][0].id,employeeAnswers.manager])
     return
 }
 
@@ -204,12 +208,10 @@ else if (returnedAnswers.menu === "Add a role"){
   
 }
 else if (returnedAnswers.menu === "Add an employee"){
-        try{
+    
         const newEmployee = await AddEmployee()
         console.log("Employee added")
-        } catch(err){
-            console.log("Error, employee not added")
-        }
+        
    
 }
 }
