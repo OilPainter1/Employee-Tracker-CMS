@@ -10,6 +10,7 @@ const connection =  mysql2.createConnection({
     user: process.env.db_username,
     database: process.env.db_name
   })
+ 
 
 //sql query to view departments
 async function getDepartments () { 
@@ -53,6 +54,26 @@ async function listDepartments() {
     return newDepartmentArray
 }
 
+
+
+
+
+async function listRoles(){
+    const roleArray = await getRoles()
+    console.log(roleArray)
+    const newRoleArray = []
+    roleArray.forEach((answers)=>{
+        newRoleArray.push(answers.title)
+        return
+    })
+    console.log(newRoleArray)
+    return newRoleArray
+}
+
+
+
+
+
 //questions to be prompted for adding a new role
 const roleQuestions =[
     {
@@ -74,11 +95,47 @@ const roleQuestions =[
    
 ]
 
+var employeeQuestions = [
+    {
+        type: "input",
+        message: "Enter employee's first name",
+        name: "firstName"
+    },
+    {
+        type: "input",
+        message: "Enter employee's last name",
+        name: "lastName"
+    },
+    {
+        type: "list",
+        message: "Select the employee's role:",
+        choices: await listRoles(),
+        name: "role"
+    },
+    {
+        type: "input",
+        message: "name this employee's manager",
+        name: "manager"
+    }
+
+
+
+
+]
+
 
 async function AddRole() {
     const roleAnswers = await inquirer.prompt(roleQuestions)
-    const roleId = await connection.promise().query("select id from department where name = ?",[roleAnswers.department])
-    await connection.promise().query("insert into role_table (title,salary,department_id) values (?,?,?)",[roleAnswers.name,roleAnswers.salary,roleId[0][0].id])
+    const departmentId = await connection.promise().query("select id from department where name = ?",[roleAnswers.department])
+    await connection.promise().query("insert into role_table (title,salary,department_id) values (?,?,?)",[roleAnswers.name,roleAnswers.salary,departmentId[0][0].id])
+    return
+}
+
+async function AddEmployee() {
+    const employeeAnswers = await inquirer.prompt(employeeQuestions)
+    const roleId = await connection.promise().query("select id from roles_table where title = ?",[employeeAnswers.role])
+    await connection.promise().query("insert into role_table (first_name,last_name,role_id,manager_id) values (?,?,?,?)",
+        [employeeAnswers.firstName,employeeAnswers.lastName,employeeAnswers.role,employeeAnswers.manager])
     return
 }
 
@@ -89,7 +146,11 @@ var done = false
 
 
 while(!done){
-
+     const connection =  mysql2.createConnection({
+        host: 'localhost',
+        user: process.env.db_username,
+        database: process.env.db_name
+      })
 async function init2() {
     const answers = await inquirer.prompt({
         type: "list",
@@ -142,54 +203,14 @@ else if (returnedAnswers.menu === "Add a role"){
     }
   
 }
+else if (returnedAnswers.menu === "Add an employee"){
+        try{
+        const newEmployee = await AddEmployee()
+        console.log("Employee added")
+        } catch(err){
+            console.log("Error, employee not added")
+        }
+   
+}
 }
 
-/*async function init(){
-inquirer.prompt({
-    type: "list",
-    message: "Choose one of the following:",
-    choices:["View all departments","View all roles", "View all employees","Add a department","Add a role","Add an employee","Update an employee role","done"],
-    name: "menu",
-   
-})
-.then(answers=>{
-    if (answers.menu === "done") {
-        console.log("Done")
-        done =true 
-        return
-    }
-    else if (answers.menu === "View all departments"){
-        getDepartments()
-        console.log(`
-        
-        `)
-        
-        return
-    }
-    else if (answers.menu === "View all roles"){
-        getRoles()
-        console.log(`
-        
-        `)
-        
-        return
-    }
-    else if (answers.menu === "View all employees"){
-        getEmployees()
-        console.log(`
-
-        `)
-        
-        return
-    }
-    else if (answers.menu === "Add a department"){
-        
-       
-        
-        return
-        
-    }})}
-    
-    
-    
-    */

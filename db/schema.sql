@@ -29,7 +29,7 @@ CREATE TABLE employees(
     last_name VARCHAR(30),
     /*Foreign Key*/
     role_id INT,
-    manager_id INT,
+    manager_id VARCHAR(30),
     PRIMARY KEY (id),
     FOREIGN KEY (role_id) REFERENCES role_table(id)
 );
