@@ -68,6 +68,15 @@ async function listRoles(){
     return newRoleArray
 }
 
+async function listEmployees(){
+    const employeeArray= await getEmployees()
+    const newEmployeeArray = []
+    employeeArray.forEach((answers)=>{
+        newEmployeeArray.push(`${answers.first_name}`)
+        return
+    })
+    return newEmployeeArray
+}
 
 
 
@@ -120,13 +129,28 @@ const employeeQuestions = [
         name: "manager"
     }
 
-
-
-
 ]
     return employeeQuestions
 }
 
+
+async function callUpdateEmployeeRoleQuestions(){
+    const updateRollQuestions= [{
+        type: "list",
+        name: "employee",
+        message: "select the employee for the role change",
+        choices: await listEmployees()
+
+    },
+    {
+        type: "list",
+        name: "newRole",
+        message: "What is the employee's new role?",
+        choices: await listRoles()
+    }
+    ]
+    return updateRollQuestions
+}
 
 async function AddRole() {
     const roleAnswers = await inquirer.prompt(await callRoleQuestions())
@@ -208,11 +232,16 @@ else if (returnedAnswers.menu === "Add a role"){
   
 }
 else if (returnedAnswers.menu === "Add an employee"){
-    
-        const newEmployee = await AddEmployee()
-        console.log("Employee added")
-        
-   
+    const newEmployee = await AddEmployee()
+    console.log("Employee added")
+}
+else if (returnedAnswers.menu === "Update an employee role"){
+    const updateAnswers = await inquirer.prompt(await callUpdateEmployeeRoleQuestions())
+
+    const EmployeeId = await connection.promise().query("select id from employees where first_name = ?",[updateAnswers.employee])
+    const updateAnswersRoleId = await connection.promise().query("select id from role_table where title = ?",[updateAnswers.newRole])
+    await connection.promise().query("update employees set role_id = ? where id = ?",[updateAnswersRoleId[0][0].id,EmployeeId[0][0].id])
+    console.log(`Updated ${updateAnswers.employee}'s role`)
 }
 }
 
