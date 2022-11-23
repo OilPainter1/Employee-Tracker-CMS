@@ -5,7 +5,7 @@ import mysql2 from "mysql2"
 
 
 //initializes connection to mysql
-const connection = mysql2.createConnection({
+const connection =  mysql2.createConnection({
     host: 'localhost',
     user: process.env.db_username,
     database: process.env.db_name
@@ -42,6 +42,7 @@ const departmentQuestions = [
 
 }]
 
+//helper function to list department choices for adding a new role
 async function listDepartments() {
     const departmentArray = await getDepartments()
     const newDepartmentArray = []
@@ -52,7 +53,8 @@ async function listDepartments() {
     return newDepartmentArray
 }
 
-const roleQuestions = [
+//questions to be prompted for adding a new role
+const roleQuestions =[
     {
         type: "input",
         message: "Enter the role name",
@@ -72,17 +74,17 @@ const roleQuestions = [
    
 ]
 
+
 async function AddRole() {
     const roleAnswers = await inquirer.prompt(roleQuestions)
     const roleId = await connection.promise().query("select id from department where name = ?",[roleAnswers.department])
     await connection.promise().query("insert into role_table (title,salary,department_id) values (?,?,?)",[roleAnswers.name,roleAnswers.salary,roleId[0][0].id])
-    console.log("Role added")
     return
 }
 
 
  
-
+//initializes loop condition
 var done = false
 
 
@@ -120,12 +122,25 @@ else if (returnedAnswers.menu === "View all employees"){
     continue
 }
 else if (returnedAnswers.menu === "Add a department"){
+    try{
     const newDepartment = await AddDepartment()
     await connection.promise().query("insert into department (name) values (?)",[newDepartment.name])
     console.log("Department added")
+    continue
+    } catch(err){
+        console.log("Error")
+    }
 }
 else if (returnedAnswers.menu === "Add a role"){
+
+    try{
     const newRole = await AddRole()
+    console.log("Role added")
+    continue
+    } catch (error){
+        console.log("Error, role not added")
+    }
+  
 }
 }
 
