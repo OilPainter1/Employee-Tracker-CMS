@@ -41,6 +41,17 @@ const departmentQuestions = [
     message: "(Optional) Enter the department name:"
 
 }]
+
+async function listDepartments() {
+    const departmentArray = await getDepartments()
+    const newDepartmentArray = []
+    departmentArray.forEach((answers)=> {
+        newDepartmentArray.push(answers.name)
+        return
+    })
+    return newDepartmentArray
+}
+
 const roleQuestions = [
     {
         type: "input",
@@ -52,10 +63,20 @@ const roleQuestions = [
         message: "Enter role salary",
         name: "salary"
     },
+    {
+        type: "list",
+        message: "Which department does the role belong to?",
+        choices: await listDepartments(),
+        name: "department"
+    }
    
 ]
 
 async function AddRole() {
+    const roleAnswers = await inquirer.prompt(roleQuestions)
+    const roleId = await connection.promise().query("select id from department where name = ?",[roleAnswers.department])
+    await connection.promise().query("insert into role_table (title,salary,department_id) values (?,?,?)",[roleAnswers.name,roleAnswers.salary,roleId[0][0].id])
+    console.log("Role added")
     return
 }
 
@@ -104,7 +125,7 @@ else if (returnedAnswers.menu === "Add a department"){
     console.log("Department added")
 }
 else if (returnedAnswers.menu === "Add a role"){
-
+    const newRole = await AddRole()
 }
 }
 
