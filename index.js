@@ -41,6 +41,23 @@ const departmentQuestions = [
     message: "(Optional) Enter the department name:"
 
 }]
+const roleQuestions = [
+    {
+        type: "input",
+        message: "Enter the role name",
+        name: "name",
+    },
+    {
+        type: "input",
+        message: "Enter role salary",
+        name: "salary"
+    },
+   
+]
+
+async function AddRole() {
+    return
+}
 
 
  
@@ -85,6 +102,9 @@ else if (returnedAnswers.menu === "Add a department"){
     const newDepartment = await AddDepartment()
     await connection.promise().query("insert into department (name) values (?)",[newDepartment.name])
     console.log("Department added")
+}
+else if (returnedAnswers.menu === "Add a role"){
+
 }
 }
 
